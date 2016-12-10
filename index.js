@@ -29,24 +29,22 @@ nodeNames.slice(0, listSize).forEach((name) => {
 
 var totalSelfTimesByName = {};
 nodeNames.forEach((name) => {
-  totalSelfTimesByName[name] = nodes.getTotalStatByName(name, (node) => {
-    return node.stats.time.self;
-  });
+  const stats = nodes.getTotalStatByName(name, (node) => { return node.stats.time.self; });
+  stats.statCount = (stats.statCount / 1000000).toFixed(3);
+  totalSelfTimesByName[name] = stats;
 });
 
 nodeNames.sort((a, b) => {
-  return totalSelfTimesByName[b] - totalSelfTimesByName[a];
+  return totalSelfTimesByName[b].statCount - totalSelfTimesByName[a].statCount;
 });
 
 console.log();
-console.log('Most self time by name---- top ' + listSize);
-nodeNames.slice(0, listSize).forEach((name) => {
-  console.log((totalSelfTimesByName[name] / 1000000) + 'ms (' + nodes.getAllNodesByName(name).length + '): ' + name);
-});
+console.log('Most self time (ms) by name---- top ' + listSize);
+statsListByNames(nodeNames, totalSelfTimesByName, listSize).forEach((str) => { console.log(str); });
 
 var totalIOTimesByName = {};
 nodeNames.forEach((name) => {
-  totalIOTimesByName[name] = nodes.getTotalStatByName(name, (node) => {
+  const stats = nodes.getTotalStatByName(name, (node) => {
     if (node.stats.fs) {
       return Object.keys(node.stats.fs).reduce((duration, key) => {
         return duration + node.stats.fs[key].time;
@@ -54,21 +52,19 @@ nodeNames.forEach((name) => {
     }
     return 0;
   });
+  stats.statCount = (stats.statCount / 1000000).toFixed(3);
+  totalIOTimesByName[name] = stats;
 });
 
-nodeNames.sort((a, b) => {
-  return totalIOTimesByName[b] - totalIOTimesByName[a];
-});
+nodeNames.sort((a, b) => { return totalIOTimesByName[b].statCount - totalIOTimesByName[a].statCount; });
 
 console.log();
-console.log('Most IO time by name---- top ' + listSize);
-nodeNames.slice(0, listSize).forEach((name) => {
-  console.log((totalIOTimesByName[name] / 1000000) + 'ms (' + nodes.getAllNodesByName(name).length + '): ' + name);
-});
+console.log('Most IO time (ms) by name---- top ' + listSize);
+statsListByNames(nodeNames, totalIOTimesByName, listSize).forEach((str) => { console.log(str); });
 
 var totalIOCountByName = {};
 nodeNames.forEach((name) => {
-  totalIOCountByName[name] = nodes.getTotalStatByName(name, (node) => {
+  const stats = nodes.getTotalStatByName(name, (node) => {
     if (node.stats.fs) {
       return Object.keys(node.stats.fs).reduce((duration, key) => {
         return duration + node.stats.fs[key].count;
@@ -76,19 +72,26 @@ nodeNames.forEach((name) => {
     }
     return 0;
   });
+  totalIOCountByName[name] = stats;
 });
 
-nodeNames.sort((a, b) => {
-  return totalIOCountByName[b] - totalIOCountByName[a];
-});
+nodeNames.sort((a, b) => { return totalIOCountByName[b].statCount - totalIOCountByName[a].statCount; });
 
 console.log();
 console.log('Most IO count by name---- top ' + listSize);
-nodeNames.slice(0, listSize).forEach((name) => {
-  console.log((totalIOCountByName[name]) + ' (' + nodes.getAllNodesByName(name).length + '): ' + name);
-});
+statsListByNames(nodeNames, totalIOCountByName, listSize).forEach((str) => { console.log(str); });
 
+/*
 console.log();
-console.log('EyeglassCompiler = ' + nodes.getTotalStatByName('EyeglassCompiler', (node) => {
-    return node.stats.time.self;
-  }) / 1000000);
+const stats = nodes.getTotalStatByName('EyeglassCompiler', (node) => {
+  return node.stats.time.self;
+});
+console.log('EyeglassCompiler = ' + stats.statCount/1000000 + 'ms (' + stats.nodeCount + ')');
+*/
+
+function statsListByNames(nodeNames, statsByName, listSize) {
+  return nodeNames.slice(0, listSize).map((name) => {
+    const stats = statsByName[name];
+    return stats.statCount + ' (' + nodes.getAllNodesByName(name).length + '/' + stats.nodeCount + '): ' + name;
+  });
+}
