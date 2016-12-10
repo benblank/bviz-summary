@@ -1,0 +1,19 @@
+{
+  "name": "bviz-summary",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/melmerp/bviz-summary.git"
+  },
+  "author": "Mark E. Pascual <melmerp@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/melmerp/bviz-summary/issues"
+  },
+  "homepage": "https://github.com/melmerp/bviz-summary#readme"
+}
