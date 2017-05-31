@@ -38,9 +38,6 @@ nodeNames.sort((a, b) => {
   return totalSelfTimesByName[b].statCount - totalSelfTimesByName[a].statCount;
 });
 
-// get the top node
-const topNodes = nodeNames.slice(0, 1);
-
 console.log();
 console.log('Most self time (ms) by name---- top ' + listSize);
 statsListByNames(nodeNames, totalSelfTimesByName, listSize).forEach((str) => { console.log(str); });
@@ -85,7 +82,7 @@ console.log('Most IO count by name---- top ' + listSize);
 statsListByNames(nodeNames, totalIOCountByName, listSize).forEach((str) => { console.log(str); });
 
 // for the topNode, get the total FS count
-topNodes.forEach((topNode) => {
+nodeNames.slice(0, 1).forEach((topNode) => {
   var FullFSStats = nodes.getFullFSStats(topNode, 'count');
   console.log('');
   console.log('----------------------------');
@@ -100,15 +97,6 @@ topNodes.forEach((topNode) => {
   });
   console.log('Total FS count: '+totalFS);
 });
-
-function spaces(num){
-  var space = '';
-  var i = 0;
-  for (i = 0; i < num; i++){
-    space += ' ';
-  }
-  return space;
-}
 
 function statsListByNames(nodeNames, statsByName, listSize) {
   return nodeNames.slice(0, listSize).map((name) => {
